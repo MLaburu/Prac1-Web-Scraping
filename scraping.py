@@ -47,5 +47,26 @@ nubes = [nube.text for datos in page_content.findAll('div',attrs={"class":"m_tab
 #Tormentas
 tormentas = [tormenta.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_thunder m_table_weather_hour_detail_child_mobile"}) for tormenta in datos.findAll('span') if tormenta.text != "Tormenta"]
 
+campos = ['Humedad', 'Presión', 'Hora observación', 'Sensación térmica', 'Visibilidad', 'Prob. de precipitación']
+registros = [datosInternos.text for datos in page_content.findAll('div', attrs={"class":"m_table_weather_hour_detail_child"}) for datosInternos in datos.findAll('span') if datosInternos.text not in campos]
+
+# first posee la humedad, presión, la hora de observación, la sensación térmica y la visibilidad del primer registro
+first = registros[:6]
+
+# Registros posee, las humedades, presiones, probabilidades de precitacion y las sentaciones termincas
+# de todos los registros menos el primero
+registros = registros[6:]
+registros = [registros[i:i+5] for i in range(0,len(registros),5)]
+
 #Humedades
-humedades = [humedad.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_child m_table_weather_hour_detail_hum"}) for humedad in datos.findAll('span') if humedad.text != "Humedad"]
+humedades = [registro[0] for registro in registros]
+
+#Presiones
+presiones = [registro[1] for registro in registros]
+
+#Probabilidad de precipitaciones
+probPrecipitaciones = [registro[2] for registro in registros]
+
+#Sensacion térmica
+sensTermincas = [registro[3] for registro in registros]
+
