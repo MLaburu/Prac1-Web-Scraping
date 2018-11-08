@@ -1,18 +1,51 @@
 from bs4 import BeautifulSoup
-from registro import Registro
+import datetime
 import requests
 import csv
 import re
 
 capitales = ['a-coruna', 'albacete', 'alicante', 'almeria', 'avila', 'badajoz', 'barcelona', 'bilbao', 'burgos', 'caceres', 'cadiz', 'castellon-de-la-plana', 'ciudad-real', 'cordoba', 'cuenca', 'girona', 'granada', 'guadalajara', 'huelva', 'huesca', 'jaen', 'las-palmas-de-gran-canaria', 'leon', 'lleida', 'logroño', 'lugo', 'madrid', 'malaga', 'murcia', 'ourense', 'oviedo', 'palencia', 'palma-de-mallorca', 'pamplona', 'pontevedra', 'salamanca', 'san-sebastian', 'santa-cruz-de-tenerife', 'santander', 'segovia', 'sevilla', 'soria', 'tarragona', 'teruel', 'toledo', 'valencia', 'valladolid', 'vitoria', 'zamora', 'zaragoza']
 
+def modificarFecha(miFecha):
+    m = {
+    'enero': "01",
+    'febrero': "02",
+    'marzo': "03",
+    'abril': "04",
+    'mayo': "05",
+    'junio': "06",
+    'julio': "07",
+    'agosto': "08",
+    'septiembre': "09",
+    'octubre': "10",
+    'noviembre': "11",
+    'diciembre': "12"
+    }
+    # Separamos el contenido de la fecha
+    miFecha = re.sub(",","",miFecha)
+    miFecha = miFecha.split(" ")
+    # Obtenemos el numero del mes
+    mes = m[miFecha[3].lower()]
+    # Obtenemos el dia
+    dia = miFecha[1]
+    # Obtenemos el año
+    year = str(datetime.datetime.now().year)
+    fecha = year+"/"+mes+"/"+dia
+    return fecha
 
-def preprocesarTormentas(tormenta):
-    # Eliminar saltos de linea y tabulaciones
-    tormenta = re.sub(r'[\n\t]', "", tormenta)
+
+def limpiarDatos(datos):
+    # Eliminar % y °
+    datos = re.sub('[%°]','',datos)
+    # Eliminar cm, mm y hPa
+    datos = re.sub('[cmh][mP][a]?','',datos)
+    # Eliminar km/h
+    datos = re.sub('[k][m][/][h]','',datos)
+    # Eliminar tabulaciones y saltos de linea
+    datos = re.sub(r'[\n\t]', "", datos)
     # Eliminar múltiples espacios
-    tormenta = re.sub(' +',' ',tormenta)
-    return tormenta
+    datos = re.sub(' +',' ',datos)
+    return datos
 
 def limpiarRegistros(registros):
     for i in range(len(registros)):
@@ -31,7 +64,7 @@ def preprocesarRegistros(registros):
     # Dividir la lista en listas en función de los registros
     for i in range(len(registros)):
         if registros[i] != "Humedad":
-            l2.append(registros[i])
+            l2.append(limpiarDatos(registros[i]))
         else:
             if l2 != []:
                 l.append(l2)
@@ -44,9 +77,9 @@ def preprocesarRegistros(registros):
 
 def saveCSV(dias, horasCapitales, previsionesCapitales, velocidadesCapitales, rachasCapitales, lluviasCapitales, nievesCapitales, nubesCapitales, tormentasCapitales, registrosCapitales):
     """Función que guarda en un csv los registros obtenidos mediante scraping"""
-    with open("/home/mikel/Master/Tipología_y_ciclo_de_vida_de_los_datos/Practica1/Test/Dataset.csv", 'w', encoding='utf8') as mycsv:
+    with open("SpanishCapitalsForecast.csv", 'w', encoding='utf8') as mycsv:
         wr = csv.writer(mycsv)
-        wr.writerow(['Dia','Hora','Ciudad','Previsión','Velocidad','Rachas','Lluvias','Nieve','Nubes','Tormenta','Humedad','Presión','Sensación térmica','Prob. precipitación','Hora observación', 'Visibilidad'])
+        wr.writerow(['Ciudad','Dia (AAAA/MM/DD)','Hora','Previsión (°C)','Velocidad (km/h)','Rachas (km/h)','Lluvias (mm)','Nieve (cm)','Nubes (%)','Tormenta (%)','Humedad (%)','Presión (hPa)','Sensación térmica (°C)','Prob. precipitación (%)','Hora observación', 'Visibilidad'])
         for j in range(len(capitales)):
             z = 0
             for i in range(len(horasCapitales[j])):
@@ -54,12 +87,12 @@ def saveCSV(dias, horasCapitales, previsionesCapitales, velocidadesCapitales, ra
                     z = z + 1
                 registro = registrosCapitales[j][i]
                 if i == 0:
-                    wr.writerow([dias[z], horasCapitales[j][i], capitales[j], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[7], 'NULL', registro[5], registro[9]])
+                    wr.writerow([capitales[j], dias[z], horasCapitales[j][i], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[7], 'NULL', registro[5], registro[9]])
                 else:
                     if 'Prob. de precipitación' in registro:
-                        wr.writerow([dias[z], horasCapitales[j][i], capitales[j], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[7], registro[5], 'NULL', 'NULL'])
+                        wr.writerow([capitales[j], dias[z], horasCapitales[j][i], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[7], registro[5], 'NULL', 'NULL'])
                     else:
-                        wr.writerow([dias[z], horasCapitales[j][i], capitales[j], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[5], 'NULL', 'NULL', 'NULL'])
+                        wr.writerow([capitales[j], dias[z], horasCapitales[j][i], previsionesCapitales[j][i], velocidadesCapitales[j][i], rachasCapitales[j][i], lluviasCapitales[j][i], nievesCapitales[j][i], nubesCapitales[j][i], tormentasCapitales[j][i], registro[1], registro[3], registro[5], 'NULL', 'NULL', 'NULL'])
 
 def getCapitalRegistros(page_content):
     """Funcion que obtiene todos los registros de una capital"""
@@ -71,32 +104,32 @@ def getCapitalRegistros(page_content):
 
     #Previsiones
     previsiones = page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_pred"})
-    previsiones = [prevision.text for prevision in previsiones if prevision.text != 'Previsión']
+    previsiones = [limpiarDatos(prevision.text) for prevision in previsiones if prevision.text != 'Previsión']
     resultado.append(previsiones)
 
     #Velocidades
     velocidades = page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_med"})
-    velocidades = [velocidad.text for velocidad in velocidades if velocidad.text != 'Velocidad']
+    velocidades = [limpiarDatos(velocidad.text) for velocidad in velocidades if velocidad.text != 'Velocidad']
     resultado.append(velocidades)
 
     #Rachas
-    rachas = [racha.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_gust m_table_weather_hour_detail_child_mobile"}) for racha in datos.findAll('span') if racha.text != "Rachas"]
+    rachas = [limpiarDatos(racha.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_gust m_table_weather_hour_detail_child_mobile"}) for racha in datos.findAll('span') if racha.text != "Rachas"]
     resultado.append(rachas)
 
     #Lluvias
-    lluvias = [lluvia.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_rain m_table_weather_hour_detail_child_mobile"}) for lluvia in datos.findAll('span') if lluvia.text != "Lluvias"]
+    lluvias = [limpiarDatos(lluvia.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_rain m_table_weather_hour_detail_child_mobile"}) for lluvia in datos.findAll('span') if lluvia.text != "Lluvias"]
     resultado.append(lluvias)
 
     #Nieves
-    nieves = [nieve.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_snow m_table_weather_hour_detail_child_mobile"}) for nieve in datos.findAll('span') if nieve.text != "Nieve"]
+    nieves = [limpiarDatos(nieve.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_snow m_table_weather_hour_detail_child_mobile"}) for nieve in datos.findAll('span') if nieve.text != "Nieve"]
     resultado.append(nieves)
 
     #Nubes
-    nubes = [nube.text for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_clouds m_table_weather_hour_detail_child_mobile"}) for nube in datos.findAll('span') if nube.text != "Nubes"]
+    nubes = [limpiarDatos(nube.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_clouds m_table_weather_hour_detail_child_mobile"}) for nube in datos.findAll('span') if nube.text != "Nubes"]
     resultado.append(nubes)
 
     #Tormentas
-    tormentas = [preprocesarTormentas(tormenta.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_thunder m_table_weather_hour_detail_child_mobile"}) for tormenta in datos.findAll('span') if tormenta.text != "Tormenta"]
+    tormentas = [limpiarDatos(tormenta.text) for datos in page_content.findAll('div',attrs={"class":"m_table_weather_hour_detail_thunder m_table_weather_hour_detail_child_mobile"}) for tormenta in datos.findAll('span') if tormenta.text != "Tormenta"]
     resultado.append(tormentas)
 
 
@@ -111,8 +144,8 @@ def getDias(page_content):
     """Función que obtiene el campo dias de cada registro"""
     dias = []
     for i in range(0, 4):
-        title = page_content.find_all("h2")[i].text
-        dias.append(title)
+        dia = page_content.find_all("h2")[i].text
+        dias.append(modificarFecha(dia))
     return dias
 
 # Inicializar listas
