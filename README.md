@@ -1,17 +1,41 @@
-# Prac1-Web-Scraping
-## Descripción
-Esta práctica pertenece a la asignatura _Tipología y Ciclo de los Datos_ impartida en el Master _Data Science_ en la _Universitat Oberta de Catalunya (UOC)_. La practica tiene como objetivo familiarizarnos con la técnica y uso de _Web Scraping_ a través del lenguaje **Python**. Para ello se selecciona una página web de la cual extraer datos para así formar un _dataset_ con ellos.
+# Práctica1: Web Scraping
+Esta práctica pertenece a la asignatura _Tipología y Ciclo de los Datos_ impartida en el Master _Data Science_ en la _Universitat Oberta de Catalunya (UOC)_. La practica tiene como objetivo familiarizarse con la técnica y uso de _Web Scraping_ a través del lenguaje **Python**. Para ello se ha seleccionado una página web de la cual extraer datos para así formar un _dataset_ a partir de ellos.
 
-Para esta práctica en cuestión, la pagina web seleccionada ha sido la de [eltiempo.es](https://www.eltiempo.es) y concretamente la predicción por horas y días que nos muestra según una ciudad establecida, en nuestro caso, las capitales de provincias Españolas.
+Para esta primera práctica, la pagina web que se ha seleccionado ha sido [eltiempo.es](https://www.eltiempo.es), optando concretamente por la predicción en horas y días que se ofrece según una ciudad que se le indica, en este caso, las capitales de provincias españolas.
 
-## Miembros del Equipo
+## Miembros Desarrolladores
 La práctica ha sido desarrollada por los alumnos **Mikel Laburu Haro** y **Unai Mateos Corral**.
 
-## Ficheros en el Repositorio
+## Estructura del Repositorio
 El repositorio, contiene los diferentes documentos que se han realizado a lo largo de la practica:
 * **Readme.md**: Introducción al contenido del repositorio y su estructura.
 * **Scraping.py**: Archivo en el que se encuentra el código Python desarrollado para la práctica.
-* **SpanishCapitalForecast.csv**: Archivo con el contenido obtenido al aplicar a la página web [El tiempo](https://www.eltiempo.es) Web Scraping, el dataset obtenido.
+* **SpanishCapitalForecast.csv**: Archivo que contiene el dataset.
 * **name.pdf**: Documentación de la práctica desarrollada.
 
+## Requisitos
+Para poder hacer uso de la herramienta desarrollada es necesario tener instalado los siguientes softwares:
+Python3
+```
+sudo apt-get install python3.6
+sudo apt-get install python3-pip
+```
+Librerías
+```
+pip3 install BeautifulSoup
+pip3 install requests
+pip3 install re
+pip3 install csv
+pip3 install datetime
+```
+## Manual de Usuario
+Si se desea utilizar este softaware se han de ejecutar las siguientes instrucciones:
+```
+git clone https://github.com/MLaburu/Prac1-Web-Scraping.git
+cd Prac1-web-scraping
+python3 scraping.py
+```
+
 ## Recursos
+1. Subirats, L., Calvo, M. (2018). _Web Scraping_. Editorial UOC.
+2. Lawson, R. (2015). _Web Scraping with Python_. Packt Publishing Ltd. Chapter 2. Scraping the Data.
