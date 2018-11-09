@@ -11,7 +11,7 @@ El repositorio, contiene los diferentes documentos que se han realizado a lo lar
 * **Readme.md**: Introducción al contenido del repositorio y su estructura.
 * **Scraping.py**: Archivo en el que se encuentra el código Python desarrollado para la práctica.
 * **SpanishCapitalForecast.csv**: Archivo que contiene el dataset.
-* **name.pdf**: Documentación de la práctica desarrollada.
+* **Info-Dataset.pdf**: Documentación de la práctica desarrollada.
 
 ## Requisitos
 Para poder hacer uso de la herramienta desarrollada es necesario tener instalado los siguientes softwares:
